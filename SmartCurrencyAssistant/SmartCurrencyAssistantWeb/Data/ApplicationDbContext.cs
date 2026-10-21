@@ -2,6 +2,6 @@
 {
     public class ApplicationDbContext
     {
-        int f;
+        int a;
     }
 }
