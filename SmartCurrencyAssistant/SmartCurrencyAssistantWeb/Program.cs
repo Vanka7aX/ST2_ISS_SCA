@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using SmartCurrencyAssistantWeb.Data;
+using SmartCurrencyAssistantWeb.Services;
+using SmartCurrencyAssistantWeb.Services.Interfaces;
 
 namespace SmartCurrencyAssistantWeb
 {
@@ -11,6 +13,8 @@ namespace SmartCurrencyAssistantWeb
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+            builder.Services.AddHttpClient<IExchangeRateService, ExchangeRateService>();
 
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
