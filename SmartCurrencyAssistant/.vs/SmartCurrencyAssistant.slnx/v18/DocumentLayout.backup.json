@@ -52,7 +52,7 @@
               "RelativeDocumentMoniker": "SmartCurrencyAssistantWeb\\Migrations\\20261022062748_CurrencyMigration.cs",
               "ToolTip": "C:\\Users\\Lenovo\\source\\repos\\ST2_ISS_SCA\\SmartCurrencyAssistant\\SmartCurrencyAssistantWeb\\Migrations\\20261022062748_CurrencyMigration.cs",
               "RelativeToolTip": "SmartCurrencyAssistantWeb\\Migrations\\20261022062748_CurrencyMigration.cs",
-              "ViewState": "AgIAAAgAAAAAAAAAAAAxwBcAAAAqAAAAAAAAAA==",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAAABQAAABJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-10-22T06:27:48.577Z",
               "EditorCaption": ""
@@ -67,8 +67,7 @@
               "RelativeToolTip": "SmartCurrencyAssistantWeb\\Migrations\\20261022062236_CurrencyMigration.cs",
               "ViewState": "AgIAABAAAAAAAAAAAAAiwCcAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-22T06:22:36.659Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-10-22T06:22:36.659Z"
             },
             {
               "$type": "Document",
@@ -80,8 +79,7 @@
               "RelativeToolTip": "SmartCurrencyAssistantWeb\\Program.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAABQAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-22T06:11:50.629Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-10-22T06:11:50.629Z"
             },
             {
               "$type": "Document",
@@ -93,8 +91,7 @@
               "RelativeToolTip": "SmartCurrencyAssistantWeb\\appsettings.json",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAVAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2026-10-21T00:49:01.235Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-10-21T00:49:01.235Z"
             },
             {
               "$type": "Document",
@@ -106,8 +103,7 @@
               "RelativeToolTip": "SmartCurrencyAssistantWeb\\Data\\ApplicationDbContext.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-21T22:15:00.246Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-10-21T22:15:00.246Z"
             },
             {
               "$type": "Document",
@@ -119,8 +115,7 @@
               "RelativeToolTip": "SmartCurrencyAssistantWeb\\Models\\CurrencyConversion.cs",
               "ViewState": "AgIAAA8AAAAAAAAAAAAYwB0AAAAuAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-21T21:22:16.452Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-10-21T21:22:16.452Z"
             },
             {
               "$type": "Document",
@@ -132,8 +127,7 @@
               "RelativeToolTip": "SmartCurrencyAssistantWeb\\Models\\CurrencyConversionRequest.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-20T23:57:51.985Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-10-20T23:57:51.985Z"
             }
           ]
         }

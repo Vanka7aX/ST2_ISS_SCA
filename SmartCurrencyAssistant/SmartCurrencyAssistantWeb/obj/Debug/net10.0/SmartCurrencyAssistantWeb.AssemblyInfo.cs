@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SmartCurrencyAssistantWeb")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e3c17bb09423728581f91fbcacefc25ae4b554fd")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1f0bdf6684b0c258fc9538397ea273cbc26b4662")]
 [assembly: System.Reflection.AssemblyProductAttribute("SmartCurrencyAssistantWeb")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SmartCurrencyAssistantWeb")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
