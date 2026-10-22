@@ -26,5 +26,7 @@ namespace SmartCurrencyAssistantWeb.Models
         public decimal ConvertedAmount { get; set; }
 
         public DateTime ConvertedAtUtc { get; set; } = DateTime.UtcNow;
+
+        public DateOnly RateDate { get; set; }
     }
 }

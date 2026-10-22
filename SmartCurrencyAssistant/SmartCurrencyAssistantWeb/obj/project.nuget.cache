@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "MDyRKZTb8SU=",
+  "dgSpecHash": "hCjFN6tiKTA=",
   "success": true,
   "projectFilePath": "C:\\Users\\Lenovo\\source\\repos\\ST2_ISS_SCA\\SmartCurrencyAssistant\\SmartCurrencyAssistantWeb\\SmartCurrencyAssistantWeb.csproj",
   "expectedPackageFiles": [
@@ -50,33 +50,8 @@
     "C:\\Users\\Lenovo\\.nuget\\packages\\system.configuration.configurationmanager\\9.0.11\\system.configuration.configurationmanager.9.0.11.nupkg.sha512",
     "C:\\Users\\Lenovo\\.nuget\\packages\\system.identitymodel.tokens.jwt\\7.7.1\\system.identitymodel.tokens.jwt.7.7.1.nupkg.sha512",
     "C:\\Users\\Lenovo\\.nuget\\packages\\system.memory.data\\8.0.1\\system.memory.data.8.0.1.nupkg.sha512",
-    "C:\\Users\\Lenovo\\.nuget\\packages\\system.security.cryptography.pkcs\\9.0.11\\system.security.cryptography.pkcs.9.0.11.nupkg.sha512",
+    "C:\\Users\\Lenovo\\.nuget\\packages\\system.security.cryptography.pkcs\\10.0.13\\system.security.cryptography.pkcs.10.0.13.nupkg.sha512",
     "C:\\Users\\Lenovo\\.nuget\\packages\\system.security.cryptography.protecteddata\\9.0.11\\system.security.cryptography.protecteddata.9.0.11.nupkg.sha512"
   ],
-  "logs": [
-    {
-      "code": "NU1902",
-      "level": "Warning",
-      "message": "Package 'System.Security.Cryptography.Pkcs' 9.0.11 has a known moderate severity vulnerability, https://github.com/advisories/GHSA-2fmv-rv2c-59x7",
-      "projectPath": "C:\\Users\\Lenovo\\source\\repos\\ST2_ISS_SCA\\SmartCurrencyAssistant\\SmartCurrencyAssistantWeb\\SmartCurrencyAssistantWeb.csproj",
-      "warningLevel": 1,
-      "filePath": "C:\\Users\\Lenovo\\source\\repos\\ST2_ISS_SCA\\SmartCurrencyAssistant\\SmartCurrencyAssistantWeb\\SmartCurrencyAssistantWeb.csproj",
-      "libraryId": "System.Security.Cryptography.Pkcs",
-      "targetGraphs": [
-        "net10.0"
-      ]
-    },
-    {
-      "code": "NU1903",
-      "level": "Warning",
-      "message": "Package 'System.Security.Cryptography.Pkcs' 9.0.11 has a known high severity vulnerability, https://github.com/advisories/GHSA-846f-f764-76mx",
-      "projectPath": "C:\\Users\\Lenovo\\source\\repos\\ST2_ISS_SCA\\SmartCurrencyAssistant\\SmartCurrencyAssistantWeb\\SmartCurrencyAssistantWeb.csproj",
-      "warningLevel": 1,
-      "filePath": "C:\\Users\\Lenovo\\source\\repos\\ST2_ISS_SCA\\SmartCurrencyAssistant\\SmartCurrencyAssistantWeb\\SmartCurrencyAssistantWeb.csproj",
-      "libraryId": "System.Security.Cryptography.Pkcs",
-      "targetGraphs": [
-        "net10.0"
-      ]
-    }
-  ]
+  "logs": []
 }
