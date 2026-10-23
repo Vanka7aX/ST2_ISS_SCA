@@ -27,5 +27,15 @@ namespace SmartCurrencyAssistantWeb.Controllers
 
             return Ok(result);
         }
+
+        [HttpGet("history")]
+        public async Task<ActionResult<IReadOnlyList<CurrencyConversion>>> GetHistory(
+            CancellationToken cancellationToken)
+        {
+            var history = await _conversionService.GetHistoryAsync(
+                cancellationToken);
+
+            return Ok(history);
+        }
     }
 }

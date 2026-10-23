@@ -5,7 +5,7 @@ namespace SmartCurrencyAssistantWeb.Models
     public class CurrencyConversionRequest
     {
         [Required]
-        [Range(typeof(decimal), "0.01", "1000000000")]
+        [Range(typeof(decimal), "0.01", "1000000000", ParseLimitsInInvariantCulture = true)]
         public decimal Amount { get; set; }
 
         [Required]
