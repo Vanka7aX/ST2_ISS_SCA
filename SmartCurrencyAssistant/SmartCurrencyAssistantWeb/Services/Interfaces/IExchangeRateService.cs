@@ -15,5 +15,8 @@ namespace SmartCurrencyAssistantWeb.Services.Interfaces
             DateOnly startDate,
             DateOnly endDate,
             CancellationToken cancellationToken = default);
+
+        Task<IReadOnlyList<CurrencyDto>> GetAvailableCurrenciesAsync(
+            CancellationToken cancellationToken = default);
     }
 }

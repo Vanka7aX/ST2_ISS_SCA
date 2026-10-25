@@ -1,5 +1,6 @@
 ﻿using SmartCurrencyAssistantWeb.DTOs;
 using SmartCurrencyAssistantWeb.Services.Interfaces;
+using System.Net.Http.Json;
 
 namespace SmartCurrencyAssistantWeb.Services
 {
@@ -61,6 +62,26 @@ namespace SmartCurrencyAssistantWeb.Services
             return result?.OrderBy(r => r.Date).ToList()
                 ?? throw new InvalidOperationException(
                     "The API returned an empty response.");
+        }
+
+        public async Task<IReadOnlyList<CurrencyDto>> GetAvailableCurrenciesAsync(
+            CancellationToken cancellationToken = default)
+        {
+            const string url = "https://api.frankfurter.dev/v2/currencies";
+
+            var currencies = await _httpClient
+                .GetFromJsonAsync<List<CurrencyDto>>(
+                    url, cancellationToken);
+
+            if (currencies == null)
+            {
+                throw new InvalidOperationException(
+                    "The API returned an empty response.");
+            }
+
+            return currencies
+                .OrderBy(c => c.Name)
+                .ToList();
         }
 
         private static string NormalizeCurrency(string currency)
