@@ -16,9 +16,9 @@ namespace SmartCurrencyAssistantWeb
 
             builder.Services.AddHttpClient<IExchangeRateService, ExchangeRateService>();
 
-
             builder.Services.AddScoped<ICurrencyConversionService, CurrencyConversionService>();
 
+            builder.Services.AddScoped<ICurrencyTrendService, CurrencyTrendService>();
 
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(

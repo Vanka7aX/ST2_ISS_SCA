@@ -12,12 +12,14 @@ namespace SmartCurrencyAssistantWeb.Controllers
     {
         private readonly ICurrencyConversionService _conversionService;
         private readonly IExchangeRateService _exchangeRateService;
+        private readonly ICurrencyTrendService _trendService;
 
         public CurrencyController(ICurrencyConversionService conversionService, 
-            IExchangeRateService exchangeRateService)
+            IExchangeRateService exchangeRateService, ICurrencyTrendService trendService)
         {
             _conversionService = conversionService;
             _exchangeRateService = exchangeRateService;
+            _trendService = trendService;
         }
 
         [HttpPost("convert")]
@@ -81,5 +83,41 @@ namespace SmartCurrencyAssistantWeb.Controllers
 
             return Ok(currencies);
         }
+
+        [HttpGet("trend")]
+        public async Task<ActionResult<CurrencyTrendDto>> GetTrend(
+            [FromQuery] string fromCurrency,
+            [FromQuery] string toCurrency,
+            [FromQuery] DateOnly startDate,
+            [FromQuery] DateOnly endDate,
+            CancellationToken cancellationToken)
+        {
+            if (startDate == default || endDate == default)
+            {
+                return BadRequest("Start date and end date are required.");
+            }
+
+            if (startDate > endDate)
+            {
+                return BadRequest(
+                    "Start date cannot be after end date.");
+            }
+
+            if (endDate > DateOnly.FromDateTime(DateTime.UtcNow))
+            {
+                return BadRequest(
+                    "End date cannot be in the future.");
+            }
+
+            var result = await _trendService.GetTrendAsync(
+                fromCurrency,
+                toCurrency,
+                startDate,
+                endDate,
+                cancellationToken);
+
+            return Ok(result);
+        }
+
     }
 }
