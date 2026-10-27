@@ -4,7 +4,6 @@ using SmartCurrencyAssistantWeb.Models;
 using SmartCurrencyAssistantWeb.Services.Interfaces;
 using SmartCurrencyAssistantWeb.DTOs;
 
-
 namespace SmartCurrencyAssistantWeb.Controllers
 {
     [Route("api/[controller]")]

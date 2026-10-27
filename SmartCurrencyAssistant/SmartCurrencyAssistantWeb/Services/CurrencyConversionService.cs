@@ -39,6 +39,33 @@ namespace SmartCurrencyAssistantWeb.Services
             string toCurrency =
                 NormalizeCurrency(request.ToCurrency);
 
+            var availableCurrencies = await _exchangeRateService
+                .GetAvailableCurrenciesAsync(cancellationToken);
+
+            bool fromSupported = availableCurrencies.Any(currency =>
+                string.Equals(
+                    currency.Code,
+                    fromCurrency,
+                    StringComparison.OrdinalIgnoreCase));
+
+            bool toSupported = availableCurrencies.Any(currency =>
+                string.Equals(
+                    currency.Code,
+                    toCurrency,
+                    StringComparison.OrdinalIgnoreCase));
+
+            if (!fromSupported)
+            {
+                throw new ArgumentException(
+                    $"Unsupported currency code: {fromCurrency}");
+            }
+
+            if (!toSupported)
+            {
+                throw new ArgumentException(
+                    $"Unsupported currency code: {toCurrency}");
+            }
+
             decimal amount = decimal.Round(
                 request.Amount, 4, MidpointRounding.AwayFromZero);
 

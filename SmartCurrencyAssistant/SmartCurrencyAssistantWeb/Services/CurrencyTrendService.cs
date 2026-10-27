@@ -41,6 +41,33 @@ namespace SmartCurrencyAssistantWeb.Services
             fromCurrency = fromCurrency.Trim().ToUpperInvariant();
             toCurrency = toCurrency.Trim().ToUpperInvariant();
 
+            var availableCurrencies = await _exchangeRateService
+                .GetAvailableCurrenciesAsync(cancellationToken);
+
+            bool fromSupported = availableCurrencies.Any(currency =>
+                string.Equals(
+                    currency.Code,
+                    fromCurrency,
+                    StringComparison.OrdinalIgnoreCase));
+
+            bool toSupported = availableCurrencies.Any(currency =>
+                string.Equals(
+                    currency.Code,
+                    toCurrency,
+                    StringComparison.OrdinalIgnoreCase));
+
+            if (!fromSupported)
+            {
+                throw new ArgumentException(
+                    $"Unsupported currency code: {fromCurrency}");
+            }
+
+            if (!toSupported)
+            {
+                throw new ArgumentException(
+                    $"Unsupported currency code: {toCurrency}");
+            }
+
             if (fromCurrency == toCurrency)
             {
                 return new CurrencyTrendDto
@@ -60,27 +87,19 @@ namespace SmartCurrencyAssistantWeb.Services
             }
 
             var rates = await _exchangeRateService
-                .GetHistoricalRatesAsync(
-                    fromCurrency,
-                    toCurrency,
-                    startDate,
-                    endDate,
-                    cancellationToken);
+                .GetHistoricalRatesAsync(fromCurrency, toCurrency, startDate,
+                    endDate, cancellationToken);
 
-            var orderedRates = rates
-                .OrderBy(r => r.Date)
-                .ToList();
+            var orderedRates = rates.OrderBy(r => r.Date).ToList();
 
             if (orderedRates.Count == 0)
             {
-                throw new InvalidOperationException(
-                    "No exchange rates found for the selected period.");
+                throw new InvalidOperationException("No exchange rates found for the selected period.");
             }
 
             if (orderedRates.Any(r => r.Rate <= 0))
             {
-                throw new InvalidOperationException(
-                    "Invalid exchange rate received.");
+                throw new InvalidOperationException("Invalid exchange rate received.");
             }
 
             decimal startRate = orderedRates.First().Rate;
@@ -90,8 +109,7 @@ namespace SmartCurrencyAssistantWeb.Services
             decimal minRate = orderedRates.Min(r => r.Rate);
             decimal maxRate = orderedRates.Max(r => r.Rate);
 
-            decimal percentageChange =
-                ((endRate - startRate) / startRate) * 100m;
+            decimal percentageChange = ((endRate - startRate) / startRate) * 100m;
 
             string trend = endRate > startRate ? "Up" :
                            endRate < startRate ? "Down" :
