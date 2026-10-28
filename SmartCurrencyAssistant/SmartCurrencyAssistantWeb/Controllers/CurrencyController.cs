@@ -51,6 +51,13 @@ namespace SmartCurrencyAssistantWeb.Controllers
         [FromQuery] DateOnly endDate,
         CancellationToken cancellationToken)
         {
+
+            if (startDate == default || endDate == default)
+            {
+                return BadRequest(
+                    "Start date and end date are required.");
+            }
+
             if (startDate > endDate)
             {
                 return BadRequest(
