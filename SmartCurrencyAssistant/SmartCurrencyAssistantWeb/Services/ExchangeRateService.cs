@@ -62,6 +62,7 @@ namespace SmartCurrencyAssistantWeb.Services
                     "The API returned an empty response.");
         }
 
+
         public async Task<IReadOnlyList<CurrencyDto>> GetAvailableCurrenciesAsync(
             CancellationToken cancellationToken = default)
         {
