@@ -31,6 +31,14 @@ namespace SmartCurrencyAssistantWeb.Services
                     "End date cannot be in the future.");
             }
 
+
+            if (endDate.DayNumber - startDate.DayNumber > 365)
+            {
+                throw new ArgumentException(
+                    "Date range cannot exceed 365 days.");
+            }
+
+
             if (string.IsNullOrWhiteSpace(fromCurrency) ||
                 string.IsNullOrWhiteSpace(toCurrency))
             {

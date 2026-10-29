@@ -70,6 +70,14 @@ namespace SmartCurrencyAssistantWeb.Controllers
                     "End date cannot be in the future.");
             }
 
+
+            if (endDate.DayNumber - startDate.DayNumber > 365)
+            {
+                return BadRequest(
+                    "Date range cannot exceed 365 days.");
+            }
+
+
             var rates = await _exchangeRateService
                 .GetHistoricalRatesAsync(
                     fromCurrency,
