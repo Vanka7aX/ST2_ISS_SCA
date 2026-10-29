@@ -1,35 +1,33 @@
 ﻿using SmartCurrencyAssistantWeb.DTOs;
 using SmartCurrencyAssistantWeb.Services.Interfaces;
-using System.Net.Http.Json;
+//using System.Net.Http.Json;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace SmartCurrencyAssistantWeb.Services
 {
     public class ExchangeRateService : IExchangeRateService
     {
         private readonly HttpClient _httpClient;
+        private readonly IMemoryCache _memoryCache;
 
-        public ExchangeRateService(HttpClient httpClient)
+        public ExchangeRateService(HttpClient httpClient, IMemoryCache memoryCache)
         {
             _httpClient = httpClient;
+            _memoryCache = memoryCache;
         }
 
-        public async Task<ExchangeRateDto> GetLatestRateAsync(
-            string fromCurrency,
-            string toCurrency,
-            CancellationToken cancellationToken = default)
+        public async Task<ExchangeRateDto> GetLatestRateAsync(string fromCurrency, 
+            string toCurrency, CancellationToken cancellationToken = default)
         {
             fromCurrency = NormalizeCurrency(fromCurrency);
             toCurrency = NormalizeCurrency(toCurrency);
 
-            string url =
-                $"https://api.frankfurter.dev/v2/rate/{fromCurrency}/{toCurrency}";
+            string url = $"https://api.frankfurter.dev/v2/rate/{fromCurrency}/{toCurrency}";
 
-            var result = await _httpClient
-                .GetFromJsonAsync<ExchangeRateDto>(
-                    url, cancellationToken);
+            var result = await _httpClient.GetFromJsonAsync<ExchangeRateDto>(url, 
+                cancellationToken);
 
-            return result ?? throw new InvalidOperationException(
-                "The API returned an empty response.");
+            return result ?? throw new InvalidOperationException("The API returned an empty response.");
         }
 
         public async Task<IReadOnlyList<ExchangeRateDto>> GetHistoricalRatesAsync(
@@ -67,6 +65,14 @@ namespace SmartCurrencyAssistantWeb.Services
         public async Task<IReadOnlyList<CurrencyDto>> GetAvailableCurrenciesAsync(
             CancellationToken cancellationToken = default)
         {
+            const string cacheKey = "FrankfurterAvailableCurrencies";
+
+            if (_memoryCache.TryGetValue(cacheKey, out IReadOnlyList<CurrencyDto>? cachedCurrencies)
+                && cachedCurrencies != null)
+            {
+                return cachedCurrencies;
+            }
+
             const string url = "https://api.frankfurter.dev/v2/currencies";
 
             var currencies = await _httpClient
@@ -75,13 +81,15 @@ namespace SmartCurrencyAssistantWeb.Services
 
             if (currencies == null)
             {
-                throw new InvalidOperationException(
-                    "The API returned an empty response.");
+                throw new InvalidOperationException("The API returned an empty response.");
             }
 
-            return currencies
-                .OrderBy(c => c.Name)
+            IReadOnlyList<CurrencyDto> sortedCurrencies = currencies.OrderBy(c => c.Name)
                 .ToList();
+
+            _memoryCache.Set(cacheKey, sortedCurrencies, TimeSpan.FromHours(24));
+
+            return sortedCurrencies;
         }
 
         private static string NormalizeCurrency(string currency)
@@ -94,13 +102,11 @@ namespace SmartCurrencyAssistantWeb.Services
 
             string code = currency.Trim().ToUpperInvariant();
 
-            if (code.Length != 3 ||
-                code.Any(c => c < 'A' || c > 'Z'))
+            if (code.Length != 3 || code.Any(c => c < 'A' || c > 'Z'))
             {
                 throw new ArgumentException(
                     "Currency code must contain three letters.");
             }
-
             return code;
         }
     }

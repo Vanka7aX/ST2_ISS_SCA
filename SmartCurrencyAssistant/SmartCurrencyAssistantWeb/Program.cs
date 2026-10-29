@@ -14,7 +14,10 @@ namespace SmartCurrencyAssistantWeb
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
+            builder.Services.AddMemoryCache();
+
             builder.Services.AddExceptionHandler<ApiExceptionHandler>();
+
             builder.Services.AddProblemDetails();
 
             builder.Services.AddHttpClient<IExchangeRateService, ExchangeRateService>();

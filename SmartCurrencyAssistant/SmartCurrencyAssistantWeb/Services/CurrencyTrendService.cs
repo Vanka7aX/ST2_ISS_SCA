@@ -25,6 +25,12 @@ namespace SmartCurrencyAssistantWeb.Services
                     "Start date cannot be after end date.");
             }
 
+            if (startDate > endDate)
+            {
+                throw new ArgumentException(
+                    "Start date cannot be after end date.");
+            }
+
             if (endDate > DateOnly.FromDateTime(DateTime.UtcNow))
             {
                 throw new ArgumentException(
