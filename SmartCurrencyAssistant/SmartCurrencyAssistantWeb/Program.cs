@@ -20,7 +20,11 @@ namespace SmartCurrencyAssistantWeb
 
             builder.Services.AddProblemDetails();
 
-            builder.Services.AddHttpClient<IExchangeRateService, ExchangeRateService>();
+            builder.Services.AddHttpClient<IExchangeRateService, ExchangeRateService>(
+                client =>
+                {
+                    client.Timeout = TimeSpan.FromSeconds(20);
+                });
 
             builder.Services.AddScoped<ICurrencyConversionService, CurrencyConversionService>();
 
