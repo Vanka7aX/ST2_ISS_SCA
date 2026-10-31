@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SmartCurrencyAssistantWeb.Models;
-using SmartCurrencyAssistantWeb.Services.Interfaces;
 using SmartCurrencyAssistantWeb.DTOs;
+using SmartCurrencyAssistantWeb.Models;
+using SmartCurrencyAssistantWeb.Services;
+using SmartCurrencyAssistantWeb.Services.Interfaces;
 
 namespace SmartCurrencyAssistantWeb.Controllers
 {
@@ -13,13 +14,16 @@ namespace SmartCurrencyAssistantWeb.Controllers
         private readonly ICurrencyConversionService _conversionService;
         private readonly IExchangeRateService _exchangeRateService;
         private readonly ICurrencyTrendService _trendService;
+        private readonly IGeminiService _geminiService;
 
         public CurrencyController(ICurrencyConversionService conversionService, 
-            IExchangeRateService exchangeRateService, ICurrencyTrendService trendService)
+            IExchangeRateService exchangeRateService, ICurrencyTrendService trendService, 
+            IGeminiService geminiService)
         {
             _conversionService = conversionService;
             _exchangeRateService = exchangeRateService;
             _trendService = trendService;
+            _geminiService = geminiService;
         }
 
         [HttpPost("convert")]
@@ -134,5 +138,26 @@ namespace SmartCurrencyAssistantWeb.Controllers
             return Ok(result);
         }
 
+        [HttpGet("trend/analysis")]
+        public async Task<IActionResult> GetTrendAnalysis(
+        [FromQuery] string fromCurrency,
+        [FromQuery] string toCurrency,
+        [FromQuery] DateOnly startDate,
+        [FromQuery] DateOnly endDate,
+        CancellationToken cancellationToken)
+        {
+            var trend = await _trendService.GetTrendAsync(
+                fromCurrency,
+                toCurrency,
+                startDate,
+                endDate,
+                cancellationToken);
+
+            var analysis = await _geminiService.AnalyzeTrendAsync(
+                trend,
+                cancellationToken);
+
+            return Ok(new { analysis });
+        }
     }
 }

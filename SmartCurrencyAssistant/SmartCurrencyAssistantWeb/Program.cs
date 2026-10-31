@@ -26,6 +26,12 @@ namespace SmartCurrencyAssistantWeb
                     client.Timeout = TimeSpan.FromSeconds(20);
                 });
 
+            builder.Services.AddHttpClient<IGeminiService, GeminiService>(
+                client =>
+                {
+                    client.Timeout = TimeSpan.FromSeconds(60);
+                });
+
             builder.Services.AddScoped<ICurrencyConversionService, CurrencyConversionService>();
 
             builder.Services.AddScoped<ICurrencyTrendService, CurrencyTrendService>();
