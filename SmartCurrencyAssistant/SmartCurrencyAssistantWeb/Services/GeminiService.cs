@@ -69,30 +69,41 @@ namespace SmartCurrencyAssistantWeb.Services
                 }
             });
 
-            using var response = await _httpClient.SendAsync(
-                request, cancellationToken);
-
-            response.EnsureSuccessStatusCode();
-
-            using var json = await JsonDocument.ParseAsync(
-                await response.Content.ReadAsStreamAsync(
-                    cancellationToken),
-                cancellationToken: cancellationToken);
-
-            var analysis = json.RootElement
-                .GetProperty("candidates")[0]
-                .GetProperty("content")
-                .GetProperty("parts")[0]
-                .GetProperty("text")
-                .GetString();
-
-            if (string.IsNullOrWhiteSpace(analysis))
+            try
             {
-                throw new InvalidOperationException(
-                    "Gemini returned an empty analysis.");
-            }
+                using var response = await _httpClient.SendAsync(
+                    request, cancellationToken);
 
-            return analysis;
+                response.EnsureSuccessStatusCode();
+
+                using var json = await JsonDocument.ParseAsync(
+                    await response.Content.ReadAsStreamAsync(cancellationToken),
+                    cancellationToken: cancellationToken);
+
+                var analysis = json.RootElement
+                    .GetProperty("candidates")[0]
+                    .GetProperty("content")
+                    .GetProperty("parts")[0]
+                    .GetProperty("text")
+                    .GetString();
+
+                if (string.IsNullOrWhiteSpace(analysis))
+                {
+                    throw new InvalidOperationException(
+                        "Gemini returned an empty analysis.");
+                }
+
+                return analysis;
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new GeminiApiException(ex);
+            }
+            catch (OperationCanceledException ex)
+                when (!cancellationToken.IsCancellationRequested)
+            {
+                throw new GeminiApiException(ex);
+            }
         }
     }
 }

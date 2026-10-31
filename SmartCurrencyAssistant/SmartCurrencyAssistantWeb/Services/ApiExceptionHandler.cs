@@ -27,6 +27,30 @@ namespace SmartCurrencyAssistantWeb.Services
                 title = "Invalid request";
                 detail = exception.Message;
             }
+
+            else if (exception is GeminiApiException geminiException)
+            {
+                if (geminiException.InnerException is OperationCanceledException)
+                {
+                    statusCode = StatusCodes.Status504GatewayTimeout;
+                    title = "AI service timeout";
+                    detail = "The AI service did not respond in time.";
+                }
+                else if (geminiException.InnerException is HttpRequestException httpError &&
+                         httpError.StatusCode == HttpStatusCode.ServiceUnavailable)
+                {
+                    statusCode = StatusCodes.Status503ServiceUnavailable;
+                    title = "AI service unavailable";
+                    detail = "The AI service is temporarily unavailable. Please try again later.";
+                }
+                else
+                {
+                    statusCode = StatusCodes.Status502BadGateway;
+                    title = "AI service error";
+                    detail = "Unable to retrieve an analysis from the AI service.";
+                }
+            }
+
             else if (exception is HttpRequestException httpException)
             {
                 if (httpException.StatusCode is
