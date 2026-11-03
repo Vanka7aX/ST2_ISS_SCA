@@ -12,74 +12,52 @@ namespace SmartCurrencyAssistantWeb.Services
             _exchangeRateService = exchangeRateService;
         }
 
-        public async Task<CurrencyTrendDto> GetTrendAsync(
-            string fromCurrency,
-            string toCurrency,
-            DateOnly startDate,
-            DateOnly endDate,
-            CancellationToken cancellationToken = default)
+        public async Task<CurrencyTrendDto> GetTrendAsync(string fromCurrency, string toCurrency,DateOnly startDate, DateOnly endDate,CancellationToken cancellationToken = default)
         {
             if (startDate > endDate)
             {
-                throw new ArgumentException(
-                    "Start date cannot be after end date.");
+                throw new ArgumentException("Start date cannot be after end date.");
             }
 
             if (startDate > endDate)
             {
-                throw new ArgumentException(
-                    "Start date cannot be after end date.");
+                throw new ArgumentException("Start date cannot be after end date.");
             }
 
             if (endDate > DateOnly.FromDateTime(DateTime.UtcNow))
             {
-                throw new ArgumentException(
-                    "End date cannot be in the future.");
+                throw new ArgumentException("End date cannot be in the future.");
             }
 
 
             if (endDate.DayNumber - startDate.DayNumber > 365)
             {
-                throw new ArgumentException(
-                    "Date range cannot exceed 365 days.");
+                throw new ArgumentException("Date range cannot exceed 365 days.");
             }
 
 
-            if (string.IsNullOrWhiteSpace(fromCurrency) ||
-                string.IsNullOrWhiteSpace(toCurrency))
+            if (string.IsNullOrWhiteSpace(fromCurrency) || string.IsNullOrWhiteSpace(toCurrency))
             {
-                throw new ArgumentException(
-                    "Currency codes are required.");
+                throw new ArgumentException("Currency codes are required.");
             }
 
             fromCurrency = fromCurrency.Trim().ToUpperInvariant();
             toCurrency = toCurrency.Trim().ToUpperInvariant();
 
-            var availableCurrencies = await _exchangeRateService
-                .GetAvailableCurrenciesAsync(cancellationToken);
+            var availableCurrencies = await _exchangeRateService.GetAvailableCurrenciesAsync(cancellationToken);
 
-            bool fromSupported = availableCurrencies.Any(currency =>
-                string.Equals(
-                    currency.Code,
-                    fromCurrency,
-                    StringComparison.OrdinalIgnoreCase));
+            bool fromSupported = availableCurrencies.Any(currency =>string.Equals(currency.Code,fromCurrency,StringComparison.OrdinalIgnoreCase));
 
-            bool toSupported = availableCurrencies.Any(currency =>
-                string.Equals(
-                    currency.Code,
-                    toCurrency,
-                    StringComparison.OrdinalIgnoreCase));
+            bool toSupported = availableCurrencies.Any(currency =>string.Equals(currency.Code,toCurrency,StringComparison.OrdinalIgnoreCase));
 
             if (!fromSupported)
             {
-                throw new ArgumentException(
-                    $"Unsupported currency code: {fromCurrency}");
+                throw new ArgumentException($"Unsupported currency code: {fromCurrency}");
             }
 
             if (!toSupported)
             {
-                throw new ArgumentException(
-                    $"Unsupported currency code: {toCurrency}");
+                throw new ArgumentException($"Unsupported currency code: {toCurrency}");
             }
 
             if (fromCurrency == toCurrency)
@@ -100,9 +78,7 @@ namespace SmartCurrencyAssistantWeb.Services
                 };
             }
 
-            var rates = await _exchangeRateService
-                .GetHistoricalRatesAsync(fromCurrency, toCurrency, startDate,
-                    endDate, cancellationToken);
+            var rates = await _exchangeRateService.GetHistoricalRatesAsync(fromCurrency, toCurrency, startDate,endDate, cancellationToken);
 
             var orderedRates = rates.OrderBy(r => r.Date).ToList();
 
@@ -126,8 +102,7 @@ namespace SmartCurrencyAssistantWeb.Services
             decimal percentageChange = ((endRate - startRate) / startRate) * 100m;
 
             string trend = endRate > startRate ? "Up" :
-                           endRate < startRate ? "Down" :
-                           "Stable";
+                           endRate < startRate ? "Down" :"Stable";
 
             return new CurrencyTrendDto
             {

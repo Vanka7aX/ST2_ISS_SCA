@@ -11,24 +11,19 @@ namespace SmartCurrencyAssistantWeb.Services
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _configuration;
 
-        public GeminiService(
-            HttpClient httpClient,
-            IConfiguration configuration)
+        public GeminiService(HttpClient httpClient,IConfiguration configuration)
         {
             _httpClient = httpClient;
             _configuration = configuration;
         }
 
-        public async Task<string> AnalyzeTrendAsync(
-            CurrencyTrendDto trend,
-            CancellationToken cancellationToken = default)
+        public async Task<string> AnalyzeTrendAsync(CurrencyTrendDto trend,CancellationToken cancellationToken = default)
         {
             var apiKey = _configuration["Gemini:ApiKey"];
 
             if (string.IsNullOrWhiteSpace(apiKey))
             {
-                throw new InvalidOperationException(
-                    "Gemini API key is not configured.");
+                throw new InvalidOperationException("Gemini API key is not configured.");
             }
 
             var prompt = $"""
@@ -49,9 +44,7 @@ namespace SmartCurrencyAssistantWeb.Services
                 {JsonSerializer.Serialize(trend)}
                 """;
 
-            using var request = new HttpRequestMessage(
-                HttpMethod.Post,
-                "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent");
+            using var request = new HttpRequestMessage(HttpMethod.Post,"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent");
 
             request.Headers.Add("x-goog-api-key", apiKey);
 
@@ -71,26 +64,17 @@ namespace SmartCurrencyAssistantWeb.Services
 
             try
             {
-                using var response = await _httpClient.SendAsync(
-                    request, cancellationToken);
+                using var response = await _httpClient.SendAsync(request, cancellationToken);
 
                 response.EnsureSuccessStatusCode();
 
-                using var json = await JsonDocument.ParseAsync(
-                    await response.Content.ReadAsStreamAsync(cancellationToken),
-                    cancellationToken: cancellationToken);
+                using var json = await JsonDocument.ParseAsync(await response.Content.ReadAsStreamAsync(cancellationToken),cancellationToken: cancellationToken);
 
-                var analysis = json.RootElement
-                    .GetProperty("candidates")[0]
-                    .GetProperty("content")
-                    .GetProperty("parts")[0]
-                    .GetProperty("text")
-                    .GetString();
+                var analysis = json.RootElement.GetProperty("candidates")[0].GetProperty("content").GetProperty("parts")[0].GetProperty("text").GetString();
 
                 if (string.IsNullOrWhiteSpace(analysis))
                 {
-                    throw new InvalidOperationException(
-                        "Gemini returned an empty analysis.");
+                    throw new InvalidOperationException("Gemini returned an empty analysis.");
                 }
 
                 return analysis;

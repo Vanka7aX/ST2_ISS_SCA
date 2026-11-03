@@ -18,8 +18,7 @@ namespace SmartCurrencyAssistantWeb.Services
             _exchangeRateService = exchangeRateService;
         }
 
-        public async Task<CurrencyConversion> ConvertAsync(CurrencyConversionRequest request,
-            CancellationToken cancellationToken = default)
+        public async Task<CurrencyConversion> ConvertAsync(CurrencyConversionRequest request,CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(request);
 
@@ -33,14 +32,11 @@ namespace SmartCurrencyAssistantWeb.Services
 
             string toCurrency = NormalizeCurrency(request.ToCurrency);
 
-            var availableCurrencies = await _exchangeRateService
-                .GetAvailableCurrenciesAsync(cancellationToken);
+            var availableCurrencies = await _exchangeRateService.GetAvailableCurrenciesAsync(cancellationToken);
 
-            bool fromSupported = availableCurrencies.Any(currency => string.Equals(
-                    currency.Code, fromCurrency, StringComparison.OrdinalIgnoreCase));
+            bool fromSupported = availableCurrencies.Any(currency => string.Equals(currency.Code, fromCurrency, StringComparison.OrdinalIgnoreCase));
 
-            bool toSupported = availableCurrencies.Any(currency => string.Equals(
-                    currency.Code, toCurrency, StringComparison.OrdinalIgnoreCase));
+            bool toSupported = availableCurrencies.Any(currency => string.Equals(currency.Code, toCurrency, StringComparison.OrdinalIgnoreCase));
 
             if (!fromSupported)
             {
@@ -59,8 +55,7 @@ namespace SmartCurrencyAssistantWeb.Services
 
             if (fromCurrency != toCurrency)
             {
-                var rate = await _exchangeRateService
-                    .GetLatestRateAsync(fromCurrency, toCurrency, cancellationToken);
+                var rate = await _exchangeRateService.GetLatestRateAsync(fromCurrency, toCurrency, cancellationToken);
 
                 if (rate.Rate <= 0)
                 {
@@ -71,8 +66,7 @@ namespace SmartCurrencyAssistantWeb.Services
                 rateDate = rate.Date;
             }
 
-            decimal convertedAmount = decimal.Round(amount * exchangeRate, 4,
-                MidpointRounding.AwayFromZero);
+            decimal convertedAmount = decimal.Round(amount * exchangeRate, 4, MidpointRounding.AwayFromZero);
 
             var conversion = new CurrencyConversion
             {
@@ -95,12 +89,8 @@ namespace SmartCurrencyAssistantWeb.Services
         public async Task<IReadOnlyList<CurrencyConversion>>
             GetHistoryAsync(CancellationToken cancellationToken = default)
         {
-            return await _context.CurrencyConversions
-                .AsNoTracking()
-                .OrderByDescending(c => c.ConvertedAtUtc)
-                .ThenByDescending(c => c.Id)
-                .Take(100)
-                .ToListAsync(cancellationToken);
+            return await _context.CurrencyConversions.AsNoTracking().OrderByDescending(c => c.ConvertedAtUtc)
+                .ThenByDescending(c => c.Id).Take(100).ToListAsync(cancellationToken);
         }
 
         private static string NormalizeCurrency(string currency)

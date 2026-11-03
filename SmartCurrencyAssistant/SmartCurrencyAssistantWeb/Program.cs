@@ -20,25 +20,15 @@ namespace SmartCurrencyAssistantWeb
 
             builder.Services.AddProblemDetails();
 
-            builder.Services.AddHttpClient<IExchangeRateService, ExchangeRateService>(
-                client =>
-                {
-                    client.Timeout = TimeSpan.FromSeconds(20);
-                });
+            builder.Services.AddHttpClient<IExchangeRateService, ExchangeRateService>(client =>{ client.Timeout = TimeSpan.FromSeconds(20);});
 
-            builder.Services.AddHttpClient<IGeminiService, GeminiService>(
-                client =>
-                {
-                    client.Timeout = TimeSpan.FromSeconds(60);
-                });
+            builder.Services.AddHttpClient<IGeminiService, GeminiService>(client =>{client.Timeout = TimeSpan.FromSeconds(60);});
 
             builder.Services.AddScoped<ICurrencyConversionService, CurrencyConversionService>();
 
             builder.Services.AddScoped<ICurrencyTrendService, CurrencyTrendService>();
 
-            builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
-                    builder.Configuration.GetConnectionString("DefaultConnection")));
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             var app = builder.Build();
 
@@ -59,10 +49,7 @@ namespace SmartCurrencyAssistantWeb
             app.UseAuthorization();
 
             app.MapStaticAssets();
-            app.MapControllerRoute(
-                name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}")
-                .WithStaticAssets();
+            app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}").WithStaticAssets();
 
             app.Run();
         }
