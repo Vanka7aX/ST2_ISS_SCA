@@ -11,89 +11,67 @@ namespace SmartCurrencyAssistantWeb.Services
         private readonly ApplicationDbContext _context;
         private readonly IExchangeRateService _exchangeRateService;
 
-        public CurrencyConversionService(
-            ApplicationDbContext context,
+        public CurrencyConversionService(ApplicationDbContext context, 
             IExchangeRateService exchangeRateService)
         {
             _context = context;
             _exchangeRateService = exchangeRateService;
         }
 
-        public async Task<CurrencyConversion> ConvertAsync(
-            CurrencyConversionRequest request,
+        public async Task<CurrencyConversion> ConvertAsync(CurrencyConversionRequest request,
             CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(request);
 
-            if (request.Amount < 0.01m ||
-                request.Amount > 1_000_000_000m)
+            if (request.Amount < 0.01m || request.Amount > 1_000_000_000m)
             {
-                throw new ArgumentOutOfRangeException(
-                    nameof(request.Amount),
+                throw new ArgumentOutOfRangeException(nameof(request.Amount),
                     "Amount must be between 0.01 and 1,000,000,000.");
             }
 
-            string fromCurrency =
-                NormalizeCurrency(request.FromCurrency);
+            string fromCurrency = NormalizeCurrency(request.FromCurrency);
 
-            string toCurrency =
-                NormalizeCurrency(request.ToCurrency);
+            string toCurrency = NormalizeCurrency(request.ToCurrency);
 
             var availableCurrencies = await _exchangeRateService
                 .GetAvailableCurrenciesAsync(cancellationToken);
 
-            bool fromSupported = availableCurrencies.Any(currency =>
-                string.Equals(
-                    currency.Code,
-                    fromCurrency,
-                    StringComparison.OrdinalIgnoreCase));
+            bool fromSupported = availableCurrencies.Any(currency => string.Equals(
+                    currency.Code, fromCurrency, StringComparison.OrdinalIgnoreCase));
 
-            bool toSupported = availableCurrencies.Any(currency =>
-                string.Equals(
-                    currency.Code,
-                    toCurrency,
-                    StringComparison.OrdinalIgnoreCase));
+            bool toSupported = availableCurrencies.Any(currency => string.Equals(
+                    currency.Code, toCurrency, StringComparison.OrdinalIgnoreCase));
 
             if (!fromSupported)
             {
-                throw new ArgumentException(
-                    $"Unsupported currency code: {fromCurrency}");
+                throw new ArgumentException($"Unsupported currency code: {fromCurrency}");
             }
 
             if (!toSupported)
             {
-                throw new ArgumentException(
-                    $"Unsupported currency code: {toCurrency}");
+                throw new ArgumentException($"Unsupported currency code: {toCurrency}");
             }
 
-            decimal amount = decimal.Round(
-                request.Amount, 4, MidpointRounding.AwayFromZero);
+            decimal amount = decimal.Round(request.Amount, 4, MidpointRounding.AwayFromZero);
 
             decimal exchangeRate = 1m;
-            DateOnly rateDate =
-                DateOnly.FromDateTime(DateTime.UtcNow);
+            DateOnly rateDate = DateOnly.FromDateTime(DateTime.UtcNow);
 
             if (fromCurrency != toCurrency)
             {
                 var rate = await _exchangeRateService
-                    .GetLatestRateAsync(
-                        fromCurrency,
-                        toCurrency,
-                        cancellationToken);
+                    .GetLatestRateAsync(fromCurrency, toCurrency, cancellationToken);
 
                 if (rate.Rate <= 0)
                 {
-                    throw new InvalidOperationException(
-                        "Invalid exchange rate received.");
+                    throw new InvalidOperationException("Invalid exchange rate received.");
                 }
 
                 exchangeRate = rate.Rate;
                 rateDate = rate.Date;
             }
 
-            decimal convertedAmount = decimal.Round(
-                amount * exchangeRate,
-                4,
+            decimal convertedAmount = decimal.Round(amount * exchangeRate, 4,
                 MidpointRounding.AwayFromZero);
 
             var conversion = new CurrencyConversion
@@ -115,8 +93,7 @@ namespace SmartCurrencyAssistantWeb.Services
         }
 
         public async Task<IReadOnlyList<CurrencyConversion>>
-            GetHistoryAsync(
-                CancellationToken cancellationToken = default)
+            GetHistoryAsync(CancellationToken cancellationToken = default)
         {
             return await _context.CurrencyConversions
                 .AsNoTracking()
@@ -136,13 +113,10 @@ namespace SmartCurrencyAssistantWeb.Services
 
             string code = currency.Trim().ToUpperInvariant();
 
-            if (code.Length != 3 ||
-                code.Any(c => c < 'A' || c > 'Z'))
+            if (code.Length != 3 || code.Any(c => c < 'A' || c > 'Z'))
             {
-                throw new ArgumentException(
-                    "Currency code must contain three letters.");
+                throw new ArgumentException("Currency code must contain three letters.");
             }
-
             return code;
         }
     }

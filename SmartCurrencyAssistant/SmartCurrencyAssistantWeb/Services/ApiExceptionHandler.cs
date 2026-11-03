@@ -7,9 +7,7 @@ namespace SmartCurrencyAssistantWeb.Services
 {
     public class ApiExceptionHandler : IExceptionHandler
     {
-        public async ValueTask<bool> TryHandleAsync(
-            HttpContext httpContext,
-            Exception exception,
+        public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception,
             CancellationToken cancellationToken)
         {
             if (!httpContext.Request.Path.StartsWithSegments("/api"))

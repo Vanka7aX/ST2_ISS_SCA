@@ -31,9 +31,7 @@ namespace SmartCurrencyAssistantWeb.Controllers
             [FromBody] CurrencyConversionRequest request,
             CancellationToken cancellationToken)
         {
-            var result = await _conversionService.ConvertAsync(
-                request, cancellationToken);
-
+            var result = await _conversionService.ConvertAsync(request, cancellationToken);
             return Ok(result);
         }
 
@@ -55,40 +53,29 @@ namespace SmartCurrencyAssistantWeb.Controllers
         [FromQuery] DateOnly endDate,
         CancellationToken cancellationToken)
         {
-
             if (startDate == default || endDate == default)
             {
-                return BadRequest(
-                    "Start date and end date are required.");
+                return BadRequest("Start date and end date are required.");
             }
 
             if (startDate > endDate)
             {
-                return BadRequest(
-                    "Start date cannot be after end date.");
+                return BadRequest("Start date cannot be after end date.");
             }
 
             if (endDate > DateOnly.FromDateTime(DateTime.UtcNow))
             {
-                return BadRequest(
-                    "End date cannot be in the future.");
+                return BadRequest("End date cannot be in the future.");
             }
-
 
             if (endDate.DayNumber - startDate.DayNumber > 365)
             {
-                return BadRequest(
-                    "Date range cannot exceed 365 days.");
+                return BadRequest("Date range cannot exceed 365 days.");
             }
 
-
             var rates = await _exchangeRateService
-                .GetHistoricalRatesAsync(
-                    fromCurrency,
-                    toCurrency,
-                    startDate,
-                    endDate,
-                    cancellationToken);
+                .GetHistoricalRatesAsync(fromCurrency, toCurrency, startDate, 
+                    endDate, cancellationToken);
 
             return Ok(rates);
         }
@@ -97,8 +84,7 @@ namespace SmartCurrencyAssistantWeb.Controllers
         public async Task<ActionResult<IReadOnlyList<CurrencyDto>>> GetAvailableCurrencies(
             CancellationToken cancellationToken)
         {
-            var currencies = await _exchangeRateService
-                .GetAvailableCurrenciesAsync(cancellationToken);
+            var currencies = await _exchangeRateService.GetAvailableCurrenciesAsync(cancellationToken);
 
             return Ok(currencies);
         }
@@ -118,8 +104,7 @@ namespace SmartCurrencyAssistantWeb.Controllers
 
             if (startDate > endDate)
             {
-                return BadRequest(
-                    "Start date cannot be after end date.");
+                return BadRequest("Start date cannot be after end date.");
             }
 
             if (endDate > DateOnly.FromDateTime(DateTime.UtcNow))
@@ -146,16 +131,10 @@ namespace SmartCurrencyAssistantWeb.Controllers
         [FromQuery] DateOnly endDate,
         CancellationToken cancellationToken)
         {
-            var trend = await _trendService.GetTrendAsync(
-                fromCurrency,
-                toCurrency,
-                startDate,
-                endDate,
-                cancellationToken);
+            var trend = await _trendService.GetTrendAsync(fromCurrency, toCurrency, startDate,
+                endDate, cancellationToken);
 
-            var analysis = await _geminiService.AnalyzeTrendAsync(
-                trend,
-                cancellationToken);
+            var analysis = await _geminiService.AnalyzeTrendAsync(trend, cancellationToken);
 
             return Ok(new { analysis });
         }
