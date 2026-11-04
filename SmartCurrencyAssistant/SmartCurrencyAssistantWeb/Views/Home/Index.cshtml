@@ -71,6 +71,7 @@
     <p>Basic Frontend - Backend Testing</p>
 
     <hr />
+    <div class="converter-section">
 
     <h4>Валутен асистент</h4>
 
@@ -99,6 +100,38 @@
         </div>
     </div>
 
+        <button class="btn btn-primary m-1"
+                onclick="run('convert')">
+        Конвертиране
+        </button>
+
+        
+    <div id="conversionResult" class="mt-3 p-3 rounded"
+         style="background-color: #0d1424;
+                border: 1px solid #35405a;
+                color: #f1f3f9;">
+
+        <span style="color: #aab3c8;">Резултат:</span>
+
+        <strong id="conversionValue" style="margin-left: 15px; color: #a78bfa;">
+            Извърши конвертиране
+        </strong>
+
+        
+        <div class="mt-2" style="color: #aab3c8; font-size: 14px;">
+        Актуален курс:
+        <span id="currentRate" style="color: #f1f3f9;">
+            —
+        </span>
+
+    </div>
+
+
+    </div>
+
+
+    </div>
+
     <h4>Период за анализ</h4>
 
     <div class="row g-3 mb-3">
@@ -122,10 +155,6 @@
     <h4>Функционалности</h4>
 
     <div class="mb-3">
-        <button class="btn btn-primary m-1"
-                onclick="run('convert')">
-            Конвертиране
-        </button>
 
         <button class="btn btn-secondary m-1"
                 onclick="run('history')">
@@ -177,7 +206,11 @@
     }
 
     async function sendRequest(url, options = {}) {
-        const output = document.getElementById("result");
+        
+        const isConversion = url.endsWith("/convert");
+
+        const output = document.getElementById(isConversion ? "conversionValue" : "result");
+
 
         output.textContent = "Зареждане...";
 
@@ -199,6 +232,37 @@
                     "\n\n" + JSON.stringify(data, null, 2);
                 return;
             }
+            
+           
+            if (isConversion) {
+                const converted = data.convertedAmount
+                    ?? data.convertedValue
+                    ?? data.result;
+
+                if (converted != null) {
+                    const amount = Number(data.amount);
+
+                    output.textContent =
+                        `${amount} ${data.fromCurrency} = ` +
+                        `${Number(converted).toFixed(2)} ${data.toCurrency}`;
+
+                    const rate = Number(
+                        data.rate ??
+                        data.exchangeRate ??
+                        data.conversionRate ??
+                        (Number(converted) / amount)
+                    );
+
+                    document.getElementById("currentRate").textContent =
+                        `1 ${data.fromCurrency} = ` +
+                        `${rate.toFixed(4)} ${data.toCurrency}`;
+                } else {
+                    output.textContent = JSON.stringify(data, null, 2);
+                }
+
+                return;
+            }
+
 
             if (data && data.analysis) {
                 output.textContent = data.analysis;

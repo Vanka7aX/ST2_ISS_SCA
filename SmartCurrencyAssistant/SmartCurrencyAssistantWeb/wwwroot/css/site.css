@@ -29,3 +29,39 @@ body {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
 }
+
+/* Currency Converter */
+
+.converter-section {
+    background-color: #151d30;
+    border: 1px solid #30384e;
+    border-radius: 12px;
+    padding: 28px;
+    margin-bottom: 30px;
+}
+
+    .converter-section h4 {
+        color: #f1f3f9;
+        margin-bottom: 24px;
+    }
+
+    .converter-section .form-label {
+        color: #aab3c8;
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+
+    .converter-section .form-control,
+    .converter-section .form-select {
+        background-color: #0d1424;
+        color: #f1f3f9;
+        border: 1px solid #35405a;
+        border-radius: 8px;
+        padding: 12px;
+    }
+
+        .converter-section .form-control:focus,
+        .converter-section .form-select:focus {
+            border-color: #a78bfa;
+            box-shadow: 0 0 0 2px rgba(167, 139, 250, 0.15);
+        }
