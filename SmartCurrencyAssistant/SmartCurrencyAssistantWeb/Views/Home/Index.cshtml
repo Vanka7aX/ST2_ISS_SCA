@@ -72,65 +72,61 @@
 
     <hr />
     <div class="converter-section">
+        <h4>Валутен асистент</h4>
+        <div class="row g-3 mb-3">
+            <div class="col-md-4">
+                <label class="form-label">От валута</label>
+                <select id="fromCurrency" class="form-select">
+                    <option value="EUR">EUR</option>
+                    <option value="USD">USD</option>
+                </select>
+            </div>
 
-    <h4>Валутен асистент</h4>
+            <div class="col-md-4">
+                <label class="form-label">Към валута</label>
+                <select id="toCurrency" class="form-select">
+                    <option value="USD">USD</option>
+                    <option value="EUR">EUR</option>
+                </select>
+            </div>
 
-    <div class="row g-3 mb-3">
-        <div class="col-md-4">
-            <label class="form-label">От валута</label>
-            <select id="fromCurrency" class="form-select">
-                <option value="EUR">EUR</option>
-                <option value="USD">USD</option>
-            </select>
+            <div class="col-md-4">
+                <label class="form-label">Сума</label>
+                <input id="amount" type="number" class="form-control" value="100" min="0.01" step="0.01" />
+            </div>
         </div>
 
-        <div class="col-md-4">
-            <label class="form-label">Към валута</label>
-            <select id="toCurrency" class="form-select">
-                <option value="USD">USD</option>
-                <option value="EUR">EUR</option>
-            </select>
-        </div>
+        <button class="btn btn-primary m-1" onclick="run('convert')">Конвертиране</button>
+       
+        <div id="conversionResult" class="mt-3 p-3 rounded"
+             style="background-color: #0d1424;
+                    border: 1px solid #35405a;
+                    color: #f1f3f9;">
 
-        <div class="col-md-4">
-            <label class="form-label">Сума</label>
-            <input id="amount" type="number"
-                   class="form-control"
-                   value="100" min="0.01" step="0.01" />
-        </div>
-    </div>
+            <span style="color: #aab3c8;">Резултат:</span>
 
-        <button class="btn btn-primary m-1"
-                onclick="run('convert')">
-        Конвертиране
-        </button>
+            <strong id="conversionValue" style="margin-left: 15px; color: #a78bfa;">
+                Извърши конвертиране
+            </strong>
 
         
-    <div id="conversionResult" class="mt-3 p-3 rounded"
-         style="background-color: #0d1424;
-                border: 1px solid #35405a;
-                color: #f1f3f9;">
-
-        <span style="color: #aab3c8;">Резултат:</span>
-
-        <strong id="conversionValue" style="margin-left: 15px; color: #a78bfa;">
-            Извърши конвертиране
-        </strong>
-
-        
-        <div class="mt-2" style="color: #aab3c8; font-size: 14px;">
-        Актуален курс:
-        <span id="currentRate" style="color: #f1f3f9;">
-            —
-        </span>
-
+            <div class="mt-2" style="color: #aab3c8; font-size: 14px;">
+                Актуален курс:
+                <span id="currentRate" style="color: #f1f3f9;">
+                    —
+                </span>
+            </div>
+        </div>
     </div>
 
-
-    </div>
-
-
-    </div>
+    <section id="charts" class="chart-section mt-4 p-4 rounded bg-dark text-white">
+        <h4>Сравнение на валутите</h4>
+        <p class="text-white-50">Движение на валутните курсове през годините</p>
+        <div class="mt-3">
+            <canvas id="currencyChart"></canvas>
+        </div>
+        <p id="chartStatus" class="text-white-50 mt-3">Графиката ще се зареди след избор на период.</p>
+    </section>
 
     <h4>Период за анализ</h4>
 
