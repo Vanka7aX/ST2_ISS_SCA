@@ -65,3 +65,28 @@ body {
             border-color: #a78bfa;
             box-shadow: 0 0 0 2px rgba(167, 139, 250, 0.15);
         }
+
+/* Currency Charts */
+
+.chart-section {
+    background-color: #151d30;
+    border: 1px solid #30384e;
+    border-radius: 12px;
+    padding: 28px;
+    margin-bottom: 30px;
+    color: #f1f3f9;
+}
+
+    .chart-section h4 {
+        color: #f1f3f9;
+        margin-bottom: 10px;
+    }
+
+    .chart-section canvas {
+        width: 100%;
+    }
+
+#chartStatus {
+    font-size: 14px;
+    color: #aab3c8;
+}
