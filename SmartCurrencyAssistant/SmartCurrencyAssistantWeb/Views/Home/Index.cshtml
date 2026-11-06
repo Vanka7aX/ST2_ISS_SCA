@@ -122,6 +122,9 @@
     <section id="charts" class="chart-section mt-4">
         <h4>Сравнение на валутите</h4>
         <p class="text-white-50">Движение на валутните курсове през годините</p>
+        <div class="mb-3">
+            <button type="button" id="chartOneYear" class="btn btn-outline-light btn-sm">1 година</button>
+        </div>
         <div class="mt-3">
             <canvas id="currencyChart"></canvas>
         </div>
@@ -371,43 +374,77 @@
 
     let historicalChart = null;
 
+   
     async function loadHistoricalChart() {
         const values = getValues();
 
-        const params = new URLSearchParams(values);
+        // Избираме обща валута за сравнение
+        const reference = ["USD", "EUR", "GBP"].find(code => code !== values.fromCurrency && code !== values.toCurrency);
 
-        chartStatus.textContent = "Зареждане на историческите курсове...";
+        chartStatus.textContent = "Зареждане на графиката...";
 
         try {
-            const response = await fetch(
-                `${api}/rates/history?${params}`
+            async function getRates(currency) {
+                const params = new URLSearchParams({
+                    fromCurrency: currency,
+                    toCurrency: reference,
+                    startDate: values.startDate,
+                    endDate: values.endDate
+                });
+
+                const response = await fetch(
+                    `${api}/rates/history?${params}`
+                );
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                return await response.json();
+            }
+
+            // Зареждаме реалните курсове за двете валути
+            const [firstRates, secondRates] = await Promise.all([
+                getRates(values.fromCurrency),
+                getRates(values.toCurrency)
+            ]);
+
+            const secondByDate = new Map(
+                secondRates.map(item => [
+                    item.date,
+                    Number(item.rate)
+                ])
             );
 
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`);
-            }
-
-            const rates = await response.json();
-
-            if (!Array.isArray(rates)) {
-                throw new Error("Невалиден формат на данните.");
-            }
-
-            const points = rates
+            // Сравняваме само датите, налични и за двете
+            const points = firstRates
+                .map(item => ({
+                    date: item.date,
+                    first: Number(item.rate),
+                    second: secondByDate.get(item.date)
+                }))
                 .filter(item =>
                     item.date &&
-                    Number.isFinite(Number(item.rate))
+                    Number.isFinite(item.first) &&
+                    item.first > 0 &&
+                    Number.isFinite(item.second) &&
+                    item.second > 0
                 )
                 .sort((a, b) => a.date.localeCompare(b.date));
 
+            if (historicalChart) {
+                historicalChart.destroy();
+                historicalChart = null;
+            }
+
             if (points.length === 0) {
-                chartStatus.textContent = "Няма данни за този период.";
+                chartStatus.textContent = "Няма данни за периода.";
                 return;
             }
 
-            if (historicalChart) {
-                historicalChart.destroy();
-            }
+            // И двете валути започват от 100
+            const firstStart = points[0].first;
+            const secondStart = points[0].second;
 
             historicalChart = new Chart(
                 document.getElementById("currencyChart"),
@@ -415,35 +452,50 @@
                     type: "line",
                     data: {
                         labels: points.map(item => item.date),
-                        datasets: [{
-                            label: `${values.fromCurrency}/${values.toCurrency}`,
-                            data: points.map(item => Number(item.rate)),
-                            borderColor: "#a78bfa",
-                            borderWidth: 2,
-                            pointRadius: 0,
-                            tension: 0.2
-                        }]
+                        datasets: [
+                            {
+                                label: values.fromCurrency,
+                                data: points.map(item =>
+                                    item.first / firstStart * 100
+                                ),
+                                borderColor: "#a78bfa",
+                                borderWidth: 2,
+                                pointRadius: 0,
+                                tension: 0.2
+                            },
+                            {
+                                label: values.toCurrency,
+                                data: points.map(item =>
+                                    item.second / secondStart * 100
+                                ),
+                                borderColor: "#f59e0b",
+                                borderWidth: 2,
+                                pointRadius: 0,
+                                tension: 0.2
+                            }
+                        ]
                     },
                     options: {
                         responsive: true,
                         plugins: {
                             legend: {
-                                labels: {
-                                    color: "#f1f3f9"
-                                }
+                                labels: { color: "#f1f3f9" }
                             }
                         },
                         scales: {
                             x: {
                                 ticks: {
                                     color: "#aab3c8",
-                                    maxTicksLimit: 6
+                                    maxTicksLimit: 7
                                 }
                             },
                             y: {
-                                ticks: {
+                                title: {
+                                    display: true,
+                                    text: "Индекс (начало = 100)",
                                     color: "#aab3c8"
-                                }
+                                },
+                                ticks: { color: "#aab3c8" }
                             }
                         }
                     }
@@ -451,11 +503,12 @@
             );
 
             chartStatus.textContent =
-                `Заредени ${points.length} исторически стойности.`;
+                `Сравнение спрямо ${reference}. ` +
+                `Заредени ${points.length} дати.`;
 
         } catch (error) {
             chartStatus.textContent =
-                `Грешка при зареждане: ${error.message}`;
+                `Грешка: ${error.message}`;
         }
     }
 
@@ -465,4 +518,44 @@
     document.getElementById("toCurrency").addEventListener("change", loadHistoricalChart);
     document.getElementById("startDate").addEventListener("change", loadHistoricalChart);
     document.getElementById("endDate").addEventListener("change", loadHistoricalChart);
+
+    
+const chartOneYearButton =
+    document.getElementById("chartOneYear");
+
+if (chartOneYearButton) {
+    chartOneYearButton.addEventListener("click", function () {
+
+        const startDateInput =
+            document.getElementById("startDate");
+
+        const endDateInput =
+            document.getElementById("endDate");
+
+        if (!startDateInput || !endDateInput) {
+            console.error("Date inputs were not found.");
+            return;
+        }
+
+        const end = new Date();
+        const start = new Date();
+
+        start.setDate(start.getDate() - 364);
+
+        function formatDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, "0");
+            const day = String(date.getDate()).padStart(2, "0");
+
+            return `${year}-${month}-${day}`;
+        }
+
+        startDateInput.value = formatDate(start);
+        endDateInput.value = formatDate(end);
+
+        loadHistoricalChart();
+    });
+}
+
+    
 </script>
