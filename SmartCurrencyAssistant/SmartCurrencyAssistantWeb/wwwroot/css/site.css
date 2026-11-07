@@ -90,3 +90,24 @@ body {
     font-size: 14px;
     color: #aab3c8;
 }
+
+/* Conversion history */
+
+#historyList {
+    max-height: 420px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+    #historyList::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    #historyList::-webkit-scrollbar-thumb {
+        background-color: #303b55;
+        border-radius: 10px;
+    }
+
+    #historyList::-webkit-scrollbar-track {
+        background: transparent;
+    }

@@ -131,6 +131,14 @@
         <p id="chartStatus" class="text-white-50 mt-3">Графиката ще се зареди след избор на период.</p>
     </section>
 
+    <section id="historySection" class="chart-section mt-4">
+        <h4>История на конвертиранията</h4>
+        <p class="text-white-50">Последните извършени валутни конвертирания</p>
+        <div id="historyList" class="mt-4">
+            <p class="text-white-50">Все още няма заредена история.</p>
+        </div>
+    </section>
+
     <h4>Период за анализ</h4>
 
     <div class="row g-3 mb-3">
@@ -214,12 +222,14 @@
         };
     }
 
+    
     async function sendRequest(url, options = {}) {
-        
+
         const isConversion = url.endsWith("/convert");
 
-        const output = document.getElementById(isConversion ? "conversionValue" : "result");
-
+        const output = document.getElementById(
+            isConversion ? "conversionValue" : "result"
+        );
 
         output.textContent = "Зареждане...";
 
@@ -241,8 +251,7 @@
                     "\n\n" + JSON.stringify(data, null, 2);
                 return;
             }
-            
-           
+
             if (isConversion) {
                 const converted = data.convertedAmount
                     ?? data.convertedValue
@@ -265,13 +274,16 @@
                     document.getElementById("currentRate").textContent =
                         `1 ${data.fromCurrency} = ` +
                         `${rate.toFixed(4)} ${data.toCurrency}`;
+
                 } else {
                     output.textContent = JSON.stringify(data, null, 2);
                 }
 
+                // Обновяваме историята след успешно конвертиране
+                await loadConversionHistory();
+
                 return;
             }
-
 
             if (data && data.analysis) {
                 output.textContent = data.analysis;
@@ -279,11 +291,13 @@
                 output.textContent =
                     JSON.stringify(data, null, 2);
             }
+
         } catch (error) {
             output.textContent =
                 "Грешка: " + error.message;
         }
     }
+
 
     function run(action) {
         const values = getValues();
@@ -486,7 +500,21 @@
                             x: {
                                 ticks: {
                                     color: "#aab3c8",
-                                    maxTicksLimit: 7
+                                    autoSkip: false,
+                                    maxRotation: 0,
+
+                                    callback: function(value, index) {
+                                        const lastIndex = this.getLabels().length - 1;
+                                        const step = Math.max(1, Math.ceil(lastIndex / 6));
+
+                                        if (index === 0 ||
+                                            index === lastIndex ||
+                                            index % step === 0) {
+                                            return this.getLabelForValue(value);
+                                        }
+
+                                        return null;
+                                    }
                                 }
                             },
                             y: {
@@ -520,42 +548,117 @@
     document.getElementById("endDate").addEventListener("change", loadHistoricalChart);
 
     
-const chartOneYearButton =
-    document.getElementById("chartOneYear");
+    const chartOneYearButton =
+        document.getElementById("chartOneYear");
 
-if (chartOneYearButton) {
-    chartOneYearButton.addEventListener("click", function () {
+    if (chartOneYearButton) {
+        chartOneYearButton.addEventListener("click", function () {
 
-        const startDateInput =
-            document.getElementById("startDate");
+            const startDateInput =
+                document.getElementById("startDate");
 
-        const endDateInput =
-            document.getElementById("endDate");
+            const endDateInput =
+                document.getElementById("endDate");
 
-        if (!startDateInput || !endDateInput) {
-            console.error("Date inputs were not found.");
+            if (!startDateInput || !endDateInput) {
+                console.error("Date inputs were not found.");
+                return;
+            }
+
+            const end = new Date();
+
+            // Използваме вчерашната дата
+            end.setDate(end.getDate() - 1);
+
+            // Начало на периода от 365 дни
+            const start = new Date(end);
+            start.setDate(start.getDate() - 364);
+
+            function formatDate(date) {
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, "0");
+                const day = String(date.getDate()).padStart(2, "0");
+
+                return `${year}-${month}-${day}`;
+            }
+
+            startDateInput.value = formatDate(start);
+            endDateInput.value = formatDate(end);
+
+            loadHistoricalChart();
+        });
+    }
+
+    
+    async function loadConversionHistory() {
+        const historyList = document.getElementById("historyList");
+
+        if (!historyList) return;
+
+        historyList.textContent = "Зареждане на историята...";
+
+        try {
+            const response = await fetch(`${api}/history`);
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+
+            const history = await response.json();
+
+            console.log("Conversion history:", history);
+
+            
+        historyList.style.whiteSpace = "normal";
+        historyList.replaceChildren();
+
+        if (!Array.isArray(history) || history.length === 0) {
+            historyList.textContent = "Все още няма конвертирания.";
             return;
         }
 
-        const end = new Date();
-        const start = new Date();
+        history.forEach(item => {
+            const row = document.createElement("div");
+            row.className = "d-flex justify-content-between align-items-center flex-wrap gap-3 py-3";
+            row.style.borderBottom = "1px solid #303b55";
 
-        start.setDate(start.getDate() - 364);
+            const details = document.createElement("div");
 
-        function formatDate(date) {
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, "0");
-            const day = String(date.getDate()).padStart(2, "0");
+            const amount = document.createElement("div");
+            amount.className = "fw-semibold text-white";
+            amount.textContent =
+                `${Number(item.amount).toLocaleString("bg-BG")} ${item.fromCurrency} → ` +
+                `${Number(item.convertedAmount).toLocaleString("bg-BG", { maximumFractionDigits: 2 })} ${item.toCurrency}`;
 
-            return `${year}-${month}-${day}`;
+            const rate = document.createElement("small");
+            rate.className = "text-white-50";
+            rate.textContent =
+                `Курс: 1 ${item.fromCurrency} = ` +
+                `${Number(item.exchangeRate).toLocaleString("bg-BG", { maximumFractionDigits: 6 })} ${item.toCurrency}`;
+
+            details.append(amount, document.createElement("br"), rate);
+
+            const date = document.createElement("small");
+            date.className = "text-white-50";
+            date.textContent = item.convertedAtUtc
+                ? item.convertedAtUtc.slice(0, 16).replace("T", " ") + " UTC"
+                : "Няма дата";
+
+            row.append(details, date);
+            historyList.appendChild(row);
+        });
+
+
+        } catch (error) {
+            console.error("History error:", error);
+
+            historyList.textContent =
+                `Грешка при зареждане на историята: ${error.message}`;
         }
+    }
 
-        startDateInput.value = formatDate(start);
-        endDateInput.value = formatDate(end);
+    loadConversionHistory();
 
-        loadHistoricalChart();
-    });
-}
 
     
 </script>
