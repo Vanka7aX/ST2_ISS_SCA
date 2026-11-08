@@ -1,0 +1,18 @@
+@{ ViewData["Title"] = "Анализ"; }
+<div class="workspace">
+    <div class="page-heading"><div><h1>Анализ на валутите</h1><p>Изберете валутна двойка и период, за да разгледате тенденцията.</p></div></div>
+    <div class="analysis-grid">
+        <section class="surface"><div class="section-heading"><div><h2>Параметри на анализа</h2><p>Периодът може да бъде до 365 дни.</p></div></div>
+            <form id="analysisForm" class="analysis-form">
+                <div><label class="form-label" for="analysisFrom">От валута</label><select class="form-select" id="analysisFrom" required><option value="EUR">EUR</option><option value="USD">USD</option></select></div>
+                <div><label class="form-label" for="analysisTo">Към валута</label><select class="form-select" id="analysisTo" required><option value="USD">USD</option><option value="EUR">EUR</option></select></div>
+                <div><label class="form-label" for="analysisStart">Начална дата</label><input class="form-control" id="analysisStart" type="date" required></div>
+                <div><label class="form-label" for="analysisEnd">Крайна дата</label><input class="form-control" id="analysisEnd" type="date" required></div>
+                <button class="btn action-primary" type="submit">Покажи тенденцията <span aria-hidden="true">→</span></button>
+            </form>
+        </section>
+        <section class="surface analysis-output"><div class="section-heading"><div><h2>Тенденция</h2><p>Обобщение на курсовете за избрания период.</p></div></div><div id="trendResult" aria-live="polite" class="empty-state">Изберете параметри и покажете тенденцията.</div></section>
+        <section class="surface analysis-ai"><div class="section-heading"><div><h2>AI анализ</h2><p>Обяснение на тенденцията на разбираем език.</p></div></div><button type="button" class="btn button-subtle" id="analysisAiButton">Генерирай AI анализ</button><div id="analysisAiResult" class="analysis-copy" aria-live="polite">Анализът ще се появи тук.</div></section>
+    </div>
+</div>
+@section Scripts { <script src="~/js/analysis.js" asp-append-version="true"></script> }

@@ -1,0 +1,9 @@
+@{ ViewData["Title"] = "История"; }
+<div class="workspace">
+    <div class="page-heading"><div><h1>История на конвертиранията</h1><p>Прегледайте последните записани обмени и използваните курсове.</p></div><a class="heading-link" asp-action="Index">Ново конвертиране →</a></div>
+    <section class="surface"><div class="section-heading"><div><h2>Последни конвертирания</h2><p>Показват се до 100 записа.</p></div><button type="button" class="btn button-subtle" id="refreshHistory">Обнови</button></div>
+        <label class="form-label" for="historySearch">Търси по валута</label><input class="form-control history-search" id="historySearch" type="search" placeholder="Например EUR или USD">
+        <div id="historyPageList" class="history-table-wrap" aria-live="polite">Зареждане на историята...</div>
+    </section>
+</div>
+@section Scripts { <script src="~/js/history.js" asp-append-version="true"></script> }

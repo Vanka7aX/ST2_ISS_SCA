@@ -1,217 +1,28 @@
-﻿@* @{
-    ViewData["Title"] = "Начало";
-}
-
-<div class="container mt-5">
-
-    <div class="text-center mb-5">
-        <h1 class="display-4 fw-bold">
-            Smart Currency Assistant
-        </h1>
-
-        <p class="lead text-muted">
-            Интелигентен валутен асистент
-        </p>
-
-        <p>
-            Конвертирайте валути, следете валутните курсове
-            и получавайте анализи с помощта на изкуствен интелект.
-        </p>
-    </div>
-
-    <div class="row g-4">
-
-        <div class="col-md-4">
-            <div class="card h-100 shadow-sm">
-                <div class="card-body text-center">
-                    <h4>Валутен конвертор</h4>
-                    <p>
-                        Конвертирайте суми между различни
-                        валути чрез актуални валутни курсове.
-                    </p>
-                </div>
+@{ ViewData["Title"] = "Конвертор"; }
+<div class="workspace">
+    <section class="page-heading"><div><h1>Валутен конвертор</h1><p>Конвертирайте валути и разглеждайте движението на курсовете на едно място.</p></div></section>
+    <div class="dashboard-grid">
+        <section class="surface converter-section" aria-labelledby="converter-title">
+            <div class="section-heading"><div><h2 id="converter-title">Конвертиране</h2><p>Изберете валути и въведете сума.</p></div></div>
+            <div class="converter-fields">
+                <div><label class="form-label" for="amount">Сума</label><input id="amount" type="number" class="form-control" value="100" min="0.01" step="0.01" /></div>
+                <div><label class="form-label" for="fromCurrency">От валута</label><select id="fromCurrency" class="form-select"><option value="EUR">EUR</option><option value="USD">USD</option></select></div>
+                <div><label class="form-label" for="toCurrency">Към валута</label><select id="toCurrency" class="form-select"><option value="USD">USD</option><option value="EUR">EUR</option></select></div>
             </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="card h-100 shadow-sm">
-                <div class="card-body text-center">
-                    <h4>История и графики</h4>
-                    <p>
-                        Проследявайте промените във валутните
-                        курсове и разглеждайте графики.
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="card h-100 shadow-sm">
-                <div class="card-body text-center">
-                    <h4>ИИ анализатор</h4>
-                    <p>
-                        Получавайте интелигентни анализи
-                        и препоръки за валутните курсове.
-                    </p>
-                </div>
-            </div>
-        </div>
-
+            <button type="button" class="btn action-primary" onclick="run('convert')">Конвертирай <span aria-hidden="true">→</span></button>
+            <div id="conversionResult" class="conversion-result" aria-live="polite"><span class="result-label">Резултат</span><strong id="conversionValue">Очаква конвертиране</strong><div class="rate-line">Валутен курс: <span id="currentRate">–</span></div></div>
+            <button type="button" id="toggleCurrenciesButton" class="text-action" aria-expanded="false" aria-controls="currenciesPanel">Списък с валути <span aria-hidden="true">↗</span></button>
+            <div id="currenciesPanel" class="currencies-panel" hidden><h3>Поддържани валути</h3><label class="visually-hidden" for="currencySearch">Търси валута</label><input type="search" id="currencySearch" class="form-control" placeholder="Търси валута..."><div id="currenciesList" class="currencies-list"><p>Зареждане на валутите...</p></div></div>
+        </section>
+        <section id="charts" class="surface chart-section" aria-labelledby="chart-title">
+            <div class="section-heading chart-heading"><div><h2 id="chart-title">Движение на валутите</h2><p>Сравнете представянето за избрания период.</p></div><button type="button" id="chartOneYear" class="btn button-subtle">1 година</button></div>
+            <div class="date-fields"><div><label class="form-label" for="startDate">Начална дата</label><input id="startDate" type="date" class="form-control" value="2026-09-01" /></div><div><label class="form-label" for="endDate">Крайна дата</label><input id="endDate" type="date" class="form-control" value="2026-09-30" /></div></div>
+            <div class="chart-wrap"><canvas id="currencyChart" aria-label="Графика на валутните курсове" role="img"></canvas></div><p id="chartStatus" class="status-text" aria-live="polite">Зареждане на графиката...</p>
+        </section>
     </div>
 
 </div>
- *@
- 
-@{
-    ViewData["Title"] = "SmartCurrencyAssistant";
-}
-
-<div class="container py-4">
-    <h2>SmartCurrencyAssistant</h2>
-    <p>Basic Frontend - Backend Testing</p>
-
-    <hr />
-    <div class="converter-section">
-        <h4>Валутен асистент</h4>
-        <div class="row g-3 mb-3">
-            <div class="col-md-4">
-                <label class="form-label">От валута</label>
-                <select id="fromCurrency" class="form-select">
-                    <option value="EUR">EUR</option>
-                    <option value="USD">USD</option>
-                </select>
-            </div>
-
-            <div class="col-md-4">
-                <label class="form-label">Към валута</label>
-                <select id="toCurrency" class="form-select">
-                    <option value="USD">USD</option>
-                    <option value="EUR">EUR</option>
-                </select>
-            </div>
-
-            <div class="col-md-4">
-                <label class="form-label">Сума</label>
-                <input id="amount" type="number" class="form-control" value="100" min="0.01" step="0.01" />
-            </div>
-        </div>
-
-        <button class="btn btn-primary m-1" onclick="run('convert')">Конвертиране</button>
-       
-        <div id="conversionResult" class="mt-3 p-3 rounded"
-             style="background-color: #0d1424;
-                    border: 1px solid #35405a;
-                    color: #f1f3f9;">
-
-            <span style="color: #aab3c8;">Резултат:</span>
-
-            <strong id="conversionValue" style="margin-left: 15px; color: #a78bfa;">
-                Извърши конвертиране
-            </strong>
-
-        
-            <div class="mt-2" style="color: #aab3c8; font-size: 14px;">
-                Актуален курс:
-                <span id="currentRate" style="color: #f1f3f9;">
-                    —
-                </span>
-            </div>
-        </div>
-    </div>
-
-    <section id="charts" class="chart-section mt-4">
-        <h4>Сравнение на валутите</h4>
-        <p class="text-white-50">Движение на валутните курсове през годините</p>
-        <div class="mb-3">
-            <button type="button" id="chartOneYear" class="btn btn-outline-light btn-sm">1 година</button>
-        </div>
-        <div class="mt-3">
-            <canvas id="currencyChart"></canvas>
-        </div>
-        <p id="chartStatus" class="text-white-50 mt-3">Графиката ще се зареди след избор на период.</p>
-    </section>
-
-    <section id="historySection" class="chart-section mt-4">
-        <h4>История на конвертиранията</h4>
-        <p class="text-white-50">Последните извършени валутни конвертирания</p>
-        <div id="historyList" class="mt-4">
-            <p class="text-white-50">Все още няма заредена история.</p>
-        </div>
-    </section>
- 
-    <section id="aiAnalysis" class="chart-section mt-4">
-        <h4>AI анализ на валутите</h4>
-        <p class="text-white-50">Получи анализ на избраните валути с помощта на изкуствен интелект.</p>
-        <button type="button" id="aiAnalyzeButton" class="btn btn-warning mt-3">Генерирай AI анализ</button>
-        <div id="aiAnalysisResult" class="mt-4">
-            <p class="text-white-50">Избери валути и генерирай анализ.</p>
-        </div>
-    </section>
-
-    <h4>Период за анализ</h4>
-
-    <div class="row g-3 mb-3">
-        <div class="col-md-4">
-            <label class="form-label">Начална дата</label>
-            <input id="startDate" type="date"
-                   class="form-control"
-                   value="2026-09-01" />
-        </div>
-
-        <div class="col-md-4">
-            <label class="form-label">Крайна дата</label>
-            <input id="endDate" type="date"
-                   class="form-control"
-                   value="2026-09-30" />
-        </div>
-    </div>
-
-    <hr />
-
-    <h4>Функционалности</h4>
-
-    <div class="mb-3">
-
-        <button class="btn btn-secondary m-1"
-                onclick="run('history')">
-            Последни конвертирания
-        </button>
-
-        <button class="btn btn-secondary m-1"
-                onclick="run('currencies')">
-            Списък с валути
-        </button>
-
-        <button class="btn btn-secondary m-1"
-                onclick="run('rates')">
-            Исторически курсове
-        </button>
-
-        <button class="btn btn-secondary m-1"
-                onclick="run('trend')">
-            Статистика
-        </button>
-
-        <button class="btn btn-success m-1"
-                onclick="run('ai')">
-            Gemini AI анализ
-        </button>
-    </div>
-
-    <hr />
-
-    <h4>Резултат</h4>
-
-    <pre id="result"
-         class="border rounded p-3"
-         style="white-space:pre-wrap; overflow-wrap:anywhere; max-height:500px; overflow:auto;">
-Избери функционалност от бутоните.
-    </pre>
-</div>
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
 
 <script>
     const api = "/api/Currency";
@@ -291,8 +102,6 @@
                 }
 
                 // Обновяваме историята след успешно конвертиране
-                await loadConversionHistory();
-
                 return;
             }
 
@@ -322,8 +131,7 @@
                 );
 
                 if (!Number.isFinite(amount) || amount <= 0) {
-                    document.getElementById("result").textContent =
-                        "Въведи положителна сума.";
+                    document.getElementById("conversionValue").textContent = "Моля, въведете валидна сума.";
                     return;
                 }
 
@@ -340,24 +148,8 @@
                 });
                 break;
 
-            case "history":
-                sendRequest(api + "/history");
-                break;
-
             case "currencies":
                 sendRequest(api + "/currencies");
-                break;
-
-            case "rates":
-                sendRequest(api + "/rates/history?" + params);
-                break;
-
-            case "trend":
-                sendRequest(api + "/trend?" + params);
-                break;
-
-            case "ai":
-                sendRequest(api + "/trend/analysis?" + params);
                 break;
         }
     }
@@ -599,127 +391,4 @@
             loadHistoricalChart();
         });
     }
-
-    
-    async function loadConversionHistory() {
-        const historyList = document.getElementById("historyList");
-
-        if (!historyList) return;
-
-        historyList.textContent = "Зареждане на историята...";
-
-        try {
-            const response = await fetch(`${api}/history`);
-
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`);
-            }
-
-            const history = await response.json();
-
-            console.log("Conversion history:", history);
-
-            
-        historyList.style.whiteSpace = "normal";
-        historyList.replaceChildren();
-
-        if (!Array.isArray(history) || history.length === 0) {
-            historyList.textContent = "Все още няма конвертирания.";
-            return;
-        }
-
-        history.forEach(item => {
-            const row = document.createElement("div");
-            row.className = "d-flex justify-content-between align-items-center flex-wrap gap-3 py-3";
-            row.style.borderBottom = "1px solid #303b55";
-
-            const details = document.createElement("div");
-
-            const amount = document.createElement("div");
-            amount.className = "fw-semibold text-white";
-            amount.textContent =
-                `${Number(item.amount).toLocaleString("bg-BG")} ${item.fromCurrency} → ` +
-                `${Number(item.convertedAmount).toLocaleString("bg-BG", { maximumFractionDigits: 2 })} ${item.toCurrency}`;
-
-            const rate = document.createElement("small");
-            rate.className = "text-white-50";
-            rate.textContent =
-                `Курс: 1 ${item.fromCurrency} = ` +
-                `${Number(item.exchangeRate).toLocaleString("bg-BG", { maximumFractionDigits: 6 })} ${item.toCurrency}`;
-
-            details.append(amount, document.createElement("br"), rate);
-
-            const date = document.createElement("small");
-            date.className = "text-white-50";
-            date.textContent = item.convertedAtUtc
-                ? item.convertedAtUtc.slice(0, 16).replace("T", " ") + " UTC"
-                : "Няма дата";
-
-            row.append(details, date);
-            historyList.appendChild(row);
-        });
-
-
-        } catch (error) {
-            console.error("History error:", error);
-
-            historyList.textContent =
-                `Грешка при зареждане на историята: ${error.message}`;
-        }
-    }
-
-    loadConversionHistory();
-
-    
-    const aiAnalyzeButton = document.getElementById("aiAnalyzeButton");
-
-    if (aiAnalyzeButton) {
-        aiAnalyzeButton.addEventListener("click", async function () {
-
-            const result = document.getElementById("aiAnalysisResult");
-            const values = getValues();
-
-            if (!values.fromCurrency || !values.toCurrency ||
-                !values.startDate || !values.endDate) {
-                result.textContent = "Моля, избери валути и период.";
-                return;
-            }
-
-            result.textContent = "Генериране на AI анализ...";
-            aiAnalyzeButton.disabled = true;
-
-            try {
-                const params = new URLSearchParams({
-                    fromCurrency: values.fromCurrency,
-                    toCurrency: values.toCurrency,
-                    startDate: values.startDate,
-                    endDate: values.endDate
-                });
-
-                const response = await fetch(
-                    `${api}/trend/analysis?${params}`
-                );
-
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}`);
-                }
-
-                const data = await response.json();
-
-                const analysis = data.analysis || "Няма наличен анализ.";
-
-                const formattedAnalysis = marked.parse(analysis);
-
-                result.innerHTML = DOMPurify.sanitize(formattedAnalysis);
-
-            } catch (error) {
-                result.textContent =
-                    `Грешка при генериране на анализа: ${error.message}`;
-            } finally {
-                aiAnalyzeButton.disabled = false;
-            }
-        });
-    }
-
-    
 </script>
