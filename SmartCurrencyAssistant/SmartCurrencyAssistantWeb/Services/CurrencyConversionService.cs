@@ -1,4 +1,4 @@
-﻿
+
 using Microsoft.EntityFrameworkCore;
 using SmartCurrencyAssistantWeb.Data;
 using SmartCurrencyAssistantWeb.Models;
@@ -22,10 +22,15 @@ namespace SmartCurrencyAssistantWeb.Services
         {
             ArgumentNullException.ThrowIfNull(request);
 
-            if (request.Amount < 0.01m || request.Amount > 1_000_000_000m)
+            if (request.Amount < 0.01m || request.Amount > 9_999_999_999.99m)
             {
                 throw new ArgumentOutOfRangeException(nameof(request.Amount),
-                    "Amount must be between 0.01 and 1,000,000,000.");
+                    "Amount must be between 0.01 and 9,999,999,999.99.");
+            }
+
+            if (decimal.Round(request.Amount, 2) != request.Amount)
+            {
+                throw new ArgumentException("Amount can have at most two decimal places.");
             }
 
             string fromCurrency = NormalizeCurrency(request.FromCurrency);

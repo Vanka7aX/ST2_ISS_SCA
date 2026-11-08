@@ -48,8 +48,8 @@ button,input,select{font:inherit}
 .conversion-result strong{display:block;color:var(--accent);font-size:clamp(1.25rem,2vw,1.7rem);letter-spacing:-.025em;overflow-wrap:anywhere}
 .rate-line{color:var(--muted);font-size:13px;margin-top:6px}
 .rate-line span{color:#e4ebf2}
-.text-action{background:none;border:0;color:var(--accent);padding:0;margin-top:24px;font-size:13px;font-weight:600}
-.text-action span{margin-left:7px}
+.text-action{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;background:#253329;border:1px solid #a7d66b;border-radius:8px;color:#dcf8b5;padding:10px 16px;margin-top:24px;font-size:13px;font-weight:650;cursor:pointer;transition:background-color .15s ease,border-color .15s ease}
+.text-action:hover,.text-action[aria-expanded="true"]{background:#354b32;border-color:var(--accent)}
 .currencies-panel{margin-top:20px;border-top:1px solid var(--line);padding-top:20px}
 .currencies-panel h3,.tools-content h3{font-size:15px;margin-bottom:12px}
 .currencies-list{max-height:220px;overflow:auto;margin-top:12px;color:#d5dfea}

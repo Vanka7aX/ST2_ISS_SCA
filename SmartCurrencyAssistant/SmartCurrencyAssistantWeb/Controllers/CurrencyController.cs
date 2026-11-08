@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SmartCurrencyAssistantWeb.DTOs;
 using SmartCurrencyAssistantWeb.Models;
@@ -39,10 +39,16 @@ namespace SmartCurrencyAssistantWeb.Controllers
         public async Task<ActionResult<IReadOnlyList<CurrencyConversion>>> GetHistory(
             CancellationToken cancellationToken)
         {
-            var history = await _conversionService.GetHistoryAsync(
-                cancellationToken);
-
-            return Ok(history);
+            try
+            {
+                var history = await _conversionService.GetHistoryAsync(cancellationToken);
+                return Ok(history);
+            }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            {
+                // The browser left the page before the history request finished.
+                return new EmptyResult();
+            }
         }
 
         [HttpGet("rates/history")]
